@@ -5,7 +5,7 @@ SELECT DISTINCT(title)
 	FROM film;
 
 -- 2. Muestra los nombres de todas las películas que tengan una clasificación de "PG-13".
-SELECT title   -- , rating -- lo dejo comentado para que se pueda ver la comprobación en caso de que haga falta.
+SELECT title AS peliculas_pg13  -- , rating -- lo dejo comentado para que se pueda ver la comprobación en caso de que haga falta.
 	FROM film
     WHERE rating = "PG-13";
     
@@ -111,9 +111,9 @@ SELECT title  -- , release_year -- lo dejo comentado para que se pueda ver la co
 -- 17. Encuentra el título de todas las películas que son de la misma categoría que "Family".
 SELECT f.title, c.name
 	FROM film AS f
-    LEFT JOIN film_category AS fc
+    INNER JOIN film_category AS fc
     USING (film_id)
-    LEFT JOIN category AS c
+    INNER JOIN category AS c
     USING (category_id)
 	WHERE c.name = "Family";
 
@@ -201,20 +201,7 @@ SELECT f.title, r.inventory_id
 	USING (inventory_id)
 	WHERE r.rental_id IN (SELECT r.rental_id
 							FROM rental AS R
-							WHERE (r.return_date - r.rental_date) > 5)
-	GROUP BY f.title;
-
--- código final CON UNA VARIACIÓN
-SELECT f.title, r.inventory_id
-	FROM film AS f
-	INNER JOIN inventory AS i 
-	USING (film_id)
-	INNER JOIN rental AS r 
-	USING (inventory_id)
-	WHERE r.rental_id IN (SELECT r.rental_id
-							FROM rental AS R
-							WHERE (r.return_date - r.rental_date) > 5)
-	GROUP BY f.title;
+							WHERE (r.return_date - r.rental_date) > 5);
 
 -- 23.  Encuentra el nombre y apellido de los actores que no han actuado en ninguna película
 -- de la categoría "Horror". Utiliza una subconsulta para encontrar los actores que han actuado en películas de la
