@@ -216,10 +216,80 @@ SELECT f.title, r.inventory_id
 							WHERE (r.return_date - r.rental_date) > 5)
 	GROUP BY f.title;
 
+-- 23.  Encuentra el nombre y apellido de los actores que no han actuado en ninguna película
+-- de la categoría "Horror". Utiliza una subconsulta para encontrar los actores que han actuado en películas de la
+-- categoría "Horror" y luego exclúyelos de la lista de actores
+-- OBTENGO PRIMERO LA CONDICION CATEGORIA NO HORROR
+SELECT f.film_id, c.name
+				FROM film AS f
+                INNER JOIN film_category AS fc
+                USING (film_id)
+                INNER JOIN category AS c
+                USING (category_id)
+				WHERE  c.name <> "Horror";
 
+-- QUERY FINAL
+SELECT a.first_name, a.last_name
+	FROM actor AS a
+    INNER JOIN film_actor AS fa
+    USING (actor_id)
+    INNER JOIN film AS f
+    USING (film_id)
+	WHERE f.film_id NOT IN (SELECT f.film_id
+				FROM film AS f
+                INNER JOIN film_category AS fc
+                USING (film_id)
+                INNER JOIN category AS c
+                USING (category_id)
+				WHERE  c.name <> "Horror");
+                
+                
+-- QUERY CON CTE
+WITH actores_generos_no_horror AS                            
+	(SELECT a.first_name, a.last_name, f.film_id, c.name
+		FROM actor AS a
+		INNER JOIN film_actor AS fa
+		USING (actor_id)
+		INNER JOIN film AS f
+		USING (film_id)
+		INNER JOIN film_category AS fc
+		USING (film_id)
+		INNER JOIN category AS c
+		USING (category_id))
 
-
-
-
+SELECT first_name, last_name, name 
+	FROM actores_generos_no_horror 
+    WHERE name <> "Horror"
+    ORDER BY name;
     
     
+-- OTRA OPCION CON CTE
+WITH actores_generos_no_horror AS                            
+	(SELECT a.first_name, a.last_name, f.film_id, c.name
+		FROM actor AS a
+		INNER JOIN film_actor AS fa
+		USING (actor_id)
+		INNER JOIN film AS f
+		USING (film_id)
+		INNER JOIN film_category AS fc
+		USING (film_id)
+		INNER JOIN category AS c
+		USING (category_id))
+    
+SELECT first_name, last_name
+	FROM actores_generos_no_horror 
+    WHERE name <> "Horror"
+    GROUP BY first_name, last_name;    
+ 
+-- 24. Encuentra el título de las películas que son comedias y tienen una duración mayor a 180 minutos en
+-- la tabla film.
+SELECT f.title  -- , c.name, f.length  -- lo dejo comentado para que se pueda ver la comprobación en caso de que haga falta.
+	FROM film AS f
+    INNER JOIN film_category AS fc
+    USING (film_id)
+    INNER JOIN category AS c
+    USING (category_id)
+	WHERE c.name = "Comedy" AND f.length > 180; 
+ 
+ 
+ 
