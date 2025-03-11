@@ -38,21 +38,22 @@ SELECT title  -- , rating -- lo dejo comentado para que se pueda ver la comproba
 	FROM film
     WHERE rating <> "R" AND rating <> "PG-13";
     
--- 9. Encuentra la cantidad total de películas en cada clasificación de la tabla film y muestra la clasificación junto con el recuento.
-SELECT rating, COUNT(rating)
+-- 9. Encuentra la cantidad total de películas en cada clasificación de la tabla film 
+-- y muestra la clasificación junto con el recuento.
+SELECT rating, COUNT(rating) AS num_peliculas
 	FROM film
     GROUP BY rating;
     
 -- 10. Encuentra la cantidad total de películas alquiladas por cada cliente y muestra el ID del cliente, 
 -- su nombre y apellido junto con la cantidad de películas alquiladas.
-SELECT c.customer_id, c.first_name, c.last_name, COUNT(r.rental_id)
+SELECT c.customer_id, c.first_name, c.last_name, COUNT(r.rental_id) AS n_peliculas_alquiladas
 	FROM customer AS c
     INNER JOIN rental AS r
     USING (customer_id)
     GROUP BY c.customer_id, c.first_name, c.last_name;
     
 ##########    ME DOY CUENTA QUE ESTA PIDIENDO POR CADA CLIENTE ##########
-SELECT c.customer_id, c.first_name, c.last_name, COUNT(r.rental_id) 
+SELECT c.customer_id, c.first_name, c.last_name, COUNT(r.rental_id) AS n_peliculas_alquiladas
 	FROM customer AS c
     LEFT JOIN rental AS r
     USING (customer_id)
@@ -60,7 +61,7 @@ SELECT c.customer_id, c.first_name, c.last_name, COUNT(r.rental_id)
     
 -- 11. Encuentra la cantidad total de películas alquiladas por categoría y 
 -- muestra el nombre de la categoría junto con el recuento de alquileres.
-SELECT c.name, COUNT(r.rental_id)
+SELECT c.name, COUNT(r.rental_id) AS recuento_alquileres
 	FROM rental AS r
     INNER JOIN inventory AS i
     USING (inventory_id)
@@ -71,11 +72,78 @@ SELECT c.name, COUNT(r.rental_id)
     INNER JOIN category AS c
     USING (category_id)
     GROUP BY fc.category_id, c.name;
+    
+-- 12. Encuentra el promedio de duración de las películas para cada clasificación de la tabla film y
+-- muestra la clasificación junto con el promedio de duración.
+SELECT rating, ROUND(AVG(length)) AS promedio_duracion
+	FROM film
+    GROUP BY rating;
+    
+-- 13. Encuentra el nombre y apellido de los actores que aparecen en la película con title "Indian Love".
+SELECT a.first_name, a.last_name  -- , f.title -- lo dejo comentado para que se pueda ver la comprobación en caso de que haga falta.
+	FROM actor AS a
+    INNER JOIN film_actor AS fa
+    USING (actor_id)
+    INNER JOIN film AS f
+    USING (film_id)
+    WHERE f.title = "Indian Love";
+    
+-- 14. Muestra el título de todas las películas que contengan la palabra "dog" o "cat" en su descripción.
+SELECT title  -- , description -- lo dejo comentado para que se pueda ver la comprobación en caso de que haga falta.
+	FROM film
+    WHERE description LIKE '%dog%' OR description LIKE '%cat%';
 
+######################## NO LO ENTIENDO, PREGUNTAR A CÉSAR ################################
+-- 15. Hay algún actor o actriz que no aparezca en ninguna película en la tabla film_actor.
+SELECT *
+	FROM actor AS c
+	INNER JOIN film_actor AS fa
+	USING (actor_id)
+	INNER JOIN film AS f
+	USING (film_id)
+    WHERE f.film_id IS NULL; -- NO
+    
+SELECT *
+	FROM actor AS c
+	INNER JOIN film_actor AS fa
+	USING (actor_id)
+	WHERE film_id IS NOT NULL;
+    
+SELECT *
+	FROM actor AS c
+	LEFT JOIN film_actor AS fa
+	USING (actor_id)
+	WHERE film_id IS NOT NULL;
+###########################################################################################
 
+-- 16. Encuentra el título de todas las películas que fueron lanzadas entre el año 2005 y 2010.
+SELECT title  -- , release_year -- lo dejo comentado para que se pueda ver la comprobación en caso de que haga falta.
+	FROM film
+    WHERE release_year BETWEEN 2005 AND 2010;
+    
+-- 17. Encuentra el título de todas las películas que son de la misma categoría que "Family".
+SELECT f.title, c.name
+	FROM film AS f
+    LEFT JOIN film_category AS fc
+    USING (film_id)
+    LEFT JOIN category AS c
+    USING (category_id)
+	WHERE c.name = "Family";
 
+SELECT f.title, c.name
+	FROM film AS f
+    INNER JOIN film_category AS fc
+    USING (film_id)
+    INNER JOIN category AS c
+    USING (category_id)
+	WHERE c.name = "Family"; 
 
-
-
+SELECT f.title, c.name
+	FROM film AS f
+    LEFT JOIN film_category AS fc
+    USING (film_id)
+    INNER JOIN category AS c
+    USING (category_id)
+	WHERE c.name = "Family";
     
     
