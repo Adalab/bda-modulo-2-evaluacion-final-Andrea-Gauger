@@ -94,26 +94,13 @@ SELECT title  -- , description -- lo dejo comentado para que se pueda ver la com
     WHERE description LIKE '%dog%' OR description LIKE '%cat%';
 
 ######################## NO LO ENTIENDO, PREGUNTAR A CÉSAR ################################
--- 15. Hay algún actor o actriz que no aparezca en ninguna película en la tabla film_actor.
+-- 15. Hay algún actor o actriz que no aparezca en ninguna película en la tabla film_actor.    
 SELECT *
 	FROM actor AS c
 	INNER JOIN film_actor AS fa
 	USING (actor_id)
-	INNER JOIN film AS f
-	USING (film_id)
-    WHERE f.film_id IS NULL; -- NO
-    
-SELECT *
-	FROM actor AS c
-	INNER JOIN film_actor AS fa
-	USING (actor_id)
-	WHERE film_id IS NOT NULL;
-    
-SELECT *
-	FROM actor AS c
-	LEFT JOIN film_actor AS fa
-	USING (actor_id)
-	WHERE film_id IS NOT NULL;
+	WHERE film_id IS  NULL;
+
 ###########################################################################################
 
 -- 16. Encuentra el título de todas las películas que fueron lanzadas entre el año 2005 y 2010.
@@ -145,5 +132,94 @@ SELECT f.title, c.name
     INNER JOIN category AS c
     USING (category_id)
 	WHERE c.name = "Family";
+
+-- 18. Muestra el nombre y apellido de los actores que aparecen en más de 10 películas.
+SELECT a.first_name, a.last_name  -- , COUNT(f.film_id) -- lo dejo comentado para que se pueda ver la comprobación en caso de que haga falta.
+	FROM actor AS a
+    INNER JOIN film_actor AS fa
+    USING (actor_id)
+    INNER JOIN film AS f
+    USING (film_id)
+    GROUP BY a.first_name, a.last_name
+	HAVING COUNT(f.film_id) > 10;
+    
+-- 19.  Encuentra el título de todas las películas que son "R" y tienen una duración mayor a 2 horas en la tabla film.
+SELECT title, length, rating
+	FROM film 
+    WHERE LENGTH > 120 AND rating = 'R';
+    
+-- 20. Encuentra las categorías de películas que tienen un promedio de duración superior a 120 minutos y
+-- muestra el nombre de la categoría junto con el promedio de duración.
+SELECT c.name, ROUND(AVG(length))
+	FROM category AS c
+	INNER JOIN film_category AS fc
+    USING (category_id)
+	INNER JOIN film AS f
+    USING (film_id)
+    GROUP BY c.name
+    HAVING AVG(length) > 120;
+    
+-- 21. Encuentra los actores que han actuado en al menos 5 películas y muestra el nombre del actor junto
+-- con la cantidad de películas en las que han actuado.
+SELECT a.first_name, a.last_name, COUNT(f.film_id) AS num_peliculas
+	FROM actor AS a
+    INNER JOIN film_actor AS fa
+    USING (actor_id)
+    INNER JOIN film AS f
+    USING (film_id)
+    GROUP BY a.first_name, a.last_name
+	HAVING COUNT(f.film_id) >= 5;
+    
+-- 22.  Encuentra el título de todas las películas que fueron alquiladas por más de 5 días. 
+-- Utiliza una subconsulta para encontrar los rental_ids con una duración superior a 5 días
+-- y luego selecciona las películas correspondientes.
+
+####### ESTO NO LO PEDIA ASÍ PERO YA LO TENÍA HECHO ###########
+SELECt f.title
+	FROM film AS f
+    INNER JOIN inventory AS i
+    USING (film_id)
+    INNER JOIN rental AS r
+    USING (inventory_id)
+    WHERE r.return_date - r.rental_date > 5
+    GROUP BY f.title;
+###############################################################
+
+SELECT *
+	FROM rental;
+
+SELECT r.rental_id
+	FROM rental AS r
+    WHERE (r.return_date - r.rental_date) > 5;
+
+-- código final
+SELECT f.title, r.inventory_id
+	FROM film AS f
+	INNER JOIN inventory AS i 
+	USING (film_id)
+	INNER JOIN rental AS r 
+	USING (inventory_id)
+	WHERE r.rental_id IN (SELECT r.rental_id
+							FROM rental AS R
+							WHERE (r.return_date - r.rental_date) > 5)
+	GROUP BY f.title;
+
+-- código final CON UNA VARIACIÓN
+SELECT f.title, r.inventory_id
+	FROM film AS f
+	INNER JOIN inventory AS i 
+	USING (film_id)
+	INNER JOIN rental AS r 
+	USING (inventory_id)
+	WHERE r.rental_id IN (SELECT r.rental_id
+							FROM rental AS R
+							WHERE (r.return_date - r.rental_date) > 5)
+	GROUP BY f.title;
+
+
+
+
+
+
     
     
