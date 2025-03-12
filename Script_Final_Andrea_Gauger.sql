@@ -45,7 +45,10 @@ SELECT rating AS clasificacion, COUNT(rating) AS num_peliculas
     
 /*10.Encuentra la cantidad total de películas alquiladas por cada cliente y muestra el ID del cliente, 
 su nombre y apellido junto con la cantidad de películas alquiladas*/
-SELECT c.customer_id AS id_cliente, c.first_name AS nombre, c.last_name AS apellido, COUNT(r.rental_id) AS total_peliculas_alquiladas
+SELECT c.customer_id AS id_cliente, 
+	c.first_name AS nombre, 
+    c.last_name AS apellido, 
+    COUNT(r.rental_id) AS total_peliculas_alquiladas
 	FROM customer AS c
     LEFT JOIN rental AS r
     USING (customer_id)
@@ -156,7 +159,7 @@ SELECT r.rental_id
     WHERE (r.return_date - r.rental_date) > 5;
 
 -- query completa
-SELECT f.title AS pelis_alquiladas_mas5dias
+SELECT f.title AS pelis_alquiladas_durante_mas_de_5_dias
 	FROM film AS f
 	INNER JOIN inventory AS i 
 	USING (film_id)
@@ -164,7 +167,8 @@ SELECT f.title AS pelis_alquiladas_mas5dias
 	USING (inventory_id)
 	WHERE r.rental_id IN (SELECT r.rental_id
 							FROM rental AS R
-							WHERE (r.return_date - r.rental_date) > 5);
+							WHERE (r.return_date - r.rental_date) > 5)
+	GROUP BY f.title;
 
 /*23.Encuentra el nombre y apellido de los actores que no han actuado en ninguna película
 de la categoría "Horror". Utiliza una subconsulta para encontrar los actores que han actuado en películas de la

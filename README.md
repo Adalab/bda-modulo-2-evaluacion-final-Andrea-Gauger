@@ -1,75 +1,35 @@
 Readme Evaluación Módulo 2 Andrea Gauger
 
-# Prueba de Evaluación - Módulo SQL
+# Ejercicio Evaluación SQL
 
-## Descripción del Proyecto
-Este repositorio contiene la prueba de evaluación correspondiente al módulo de SQL del Bootcamp de Data Analyst. El objetivo de esta prueba es evaluar la capacidad de escribir queries SQL eficientes, limpias y correctas para resolver problemas típicos relacionados con bases de datos y análisis de datos.
+## Descripción
+Este repositorio contiene el ejercicio de evaluación correspondiente al módulo 02: SQL del Bootcamp de Data Analyst de ADALAB. El objetivo de esta prueba es evaluar la capacidad de escribir queries SQL eficientes para resolver problemas típicos relacionados con bases de datos y análisis de datos.
 
 ## Estructura de la Base de Datos
 La base de datos utilizada para esta evaluación es una base de datos de gestión de alquileres de películas. Las tablas relevantes incluyen:
 
 - actor: Información sobre los actores y actrices.
-- film: Información sobre las películas disponibles para alquilar.
+- film: Información sobre todas las películas.
 - rental: Registros de alquileres de películas, que incluyen las fechas de alquiler y devolución.
 - inventory: Información sobre el inventario de películas.
 - film_category: Relación entre las películas y sus categorías.
 - category: Categorías a las que pertenecen las películas (por ejemplo, "Action", "Family", "Comedy").
 
-## Consultas SQL Realizadas
-1. Encuentra la cantidad total de películas alquiladas por cada cliente.
-Descripción: Se busca obtener el ID, nombre y apellido de cada cliente junto con la cantidad total de películas que han alquilado.
 
-sql
-Copiar
-SELECT c.customer_id AS id_cliente, 
-       c.first_name AS nombre, 
-       c.last_name AS apellido, 
-       COUNT(r.rental_id) AS total_peliculas_alquiladas
-FROM customer AS c
-LEFT JOIN rental AS r 
-    ON c.customer_id = r.customer_id
-GROUP BY c.customer_id, c.first_name, c.last_name;
+![Diagrama Sakila](images/diagrama_sakila.png)
 
-2. Encuentra el título de todas las películas que fueron alquiladas por más de 5 días.
-Descripción: Se utiliza una subconsulta para encontrar los rental_ids con una duración superior a 5 días, y luego seleccionamos las películas correspondientes.
+## Ejemplos de Queries Realizadas
+1. Consulta sobre la cantidad de peliculas que ha alquilado cada cliente:
 
-sql
-Copiar
-SELECT f.title, r.inventory_id
-FROM film AS f
-INNER JOIN inventory AS i 
-    USING (film_id)
-INNER JOIN rental AS r 
-    USING (inventory_id)
-WHERE r.rental_id IN (
-    SELECT r.rental_id
-    FROM rental AS r
-    WHERE (r.return_date - r.rental_date) > 5
-);
+![Query ejemplo 1](images/query_peliculas_por_cliente.png)
 
-3. Encuentra si algún actor no aparece en ninguna película en la tabla film_actor.
-Descripción: Identificamos actores que no están asociados a ninguna película en la base de datos.
+![Resultado query ejemplo 1](images/peliculas_alquiladas_por_cliente.png)
 
-sql
-Copiar
-SELECT a.first_name, a.last_name
-FROM actor AS a
-LEFT JOIN film_actor AS fa
-    ON a.actor_id = fa.actor_id
-WHERE fa.film_id IS NULL;
+2. Consulta para conocer las películas que fueron alquiladas durante más de 5 días.
 
-4. Encuentra el título de todas las películas que son de la misma categoría que "Family".
-Descripción: Se seleccionan las películas que pertenecen a la misma categoría que "Family", utilizando una subconsulta.
+![Query ejemplo 2](images/query_peliculas_alquiladas_durante_mas_de_5_dias.png)
 
-sql
-Copiar
-SELECT f.title
-FROM film AS f
-INNER JOIN film_category AS fc
-    ON f.film_id = fc.film_id
-INNER JOIN category AS c
-    ON fc.category_id = c.category_id
-WHERE c.name = "Family";
+![Resultado query ejemplo 2](images/peliculas_alquiladas_durante_mas_de_5_dias.png)
 
 ## Requisitos
 SQL compatible con MySQL.
