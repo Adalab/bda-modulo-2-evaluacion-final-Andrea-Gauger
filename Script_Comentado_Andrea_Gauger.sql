@@ -278,5 +278,48 @@ SELECT f.title  -- , c.name, f.length  -- lo dejo comentado para que se pueda ve
     USING (category_id)
 	WHERE c.name = "Comedy" AND f.length > 180; 
  
+-- BONUS:  Encuentra todos los actores que han actuado juntos en al menos una película.
+-- La consulta debe mostrar el nombre y apellido de los actores y el número de películas en las que han actuado juntos
+
+-- esta consulta me indica en cuantas peliculas ha trabajado cada actor
+SELECT a.actor_id, a.first_name, a.last_name, f.film_id
+		FROM actor AS a
+		INNER JOIN film_actor AS fa
+		USING (actor_id)
+		INNER JOIN film AS f
+		USING (film_id);
+
+-- esta consulta me dice el total de peliculas en las que ha trabajado
+SELECT a.actor_id, a.first_name, a.last_name, COUNT(f.film_id)
+		FROM actor AS a
+		INNER JOIN film_actor AS fa
+		USING (actor_id)
+		INNER JOIN film AS f
+		USING (film_id)
+        GROUP BY actor_id;
+
+-- creo la tabla actores_en_peliculas:
+WITH actores_en_peliculas AS                            
+	(SELECT a.actor_id, a.first_name, a.last_name, f.film_id
+		FROM actor AS a
+		INNER JOIN film_actor AS fa
+		USING (actor_id)
+		INNER JOIN film AS f
+		USING (film_id))
+
+-- hago la query con SELF JOIN:
+SELECT A.first_name AS actor1_nombre, A.last_name AS actor1_apellido, 
+	B.first_name AS actor2_nombre, B.last_name AS actor2_apellido, 
+    COUNT(A.film_id) AS pelis_en_comun
+	FROM actores_en_peliculas AS A, actores_en_peliculas AS b
+    WHERE A.film_id = B.film_id AND A.actor_id <> B.actor_id
+    GROUP BY A.actor_id, B.actor_id;
+
+
  
  
+ 
+ 
+ 
+ 
+
