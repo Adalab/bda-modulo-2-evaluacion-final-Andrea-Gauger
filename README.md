@@ -42,7 +42,7 @@ Clona este repositorio:
 bash
 Copiar
 git clone <url_del_repositorio>
-Carga el archivo SQL (si se proporciona) en tu servidor de base de datos MySQL.
+Carga el archivo SQL en tu servidor de base de datos MySQL.
 
 Asegúrate de que las tablas necesarias estén disponibles para ejecutar las consultas proporcionadas.
 
